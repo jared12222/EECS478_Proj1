@@ -39,7 +39,38 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
   
   // ... your code goes here
   // change the return value when you're finished
-  return NULL;
+  bdd_ptr node,neg_n,pos_n;
+  string str_op = bdd1->var + op.get_operation() + bdd2->var;
+  // cout << "computed node " << str_op << endl;
+  if( tables.find_in_computed_table(str_op,bdd1,bdd2)!= 0 )
+    return tables.find_in_computed_table(str_op,bdd1,bdd2);
+  node = op(bdd1,bdd2);
+  if( node != 0 )
+  {
+    tables.insert_computed_table(str_op,bdd1,bdd2,node);
+    return node;
+  }
+  else if ( bdd1->is_terminal() )
+  {
+    neg_n = apply(bdd1,bdd2->neg_cf,op.get_operation());
+    pos_n = apply(bdd1,bdd2->pos_cf,op.get_operation());
+  }
+  else if ( bdd2->is_terminal() )
+  {
+    neg_n = apply(bdd1->neg_cf,bdd2,op.get_operation());
+    pos_n = apply(bdd1->pos_cf,bdd2,op.get_operation());
+  }
+  else
+  {
+    neg_n = apply(bdd1->neg_cf,bdd2->neg_cf,op.get_operation());
+    pos_n = apply(bdd1->pos_cf,bdd2->pos_cf,op.get_operation());
+  }
+
+  // fill in childs into node
+  node->neg_cf = neg_n;
+  node->pos_cf = pos_n;
+  
+  return node;
 }
 
 // negative_cofactor takes the BDD pointed to by np, 
