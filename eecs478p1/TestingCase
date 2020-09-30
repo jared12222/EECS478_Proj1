@@ -1,4 +1,5 @@
 
+* apply examples
 1. a&!b&c|!a&b&c&!d|a&b&!d
 a 33
  |__b 32

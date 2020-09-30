@@ -85,8 +85,6 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
       neg_n = apply(bdd1->neg_cf,bdd2,op.get_operation());
       pos_n = apply(bdd1->pos_cf,bdd2,op.get_operation());
       var = bdd1->var;
-      node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
-      return node;
     }
     else{
       neg_n = apply(bdd1->neg_cf,bdd2->neg_cf,op.get_operation());
@@ -98,6 +96,7 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
   node = tables.find_in_unique_table(var,neg_n,pos_n);
   if( node == 0 )
     node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
+  node->probability = (node->neg_cf->probability+node->pos_cf->probability)/2;
   return node;
 }
 
@@ -109,7 +108,22 @@ bdd_ptr negative_cofactor(bdd_ptr np, char var)
   bdd_tables& tables = bdd_tables::getInstance();
   
   //... your code goes here
-  
+  bdd_ptr neg,pos;
+  // if not terminal: do something
+  if( np->is_terminal()== false )
+  {
+    // if var matched
+    if( np->var == var ){
+      // cout << "Found!" << endl << np->neg_cf << endl;
+      np = np->neg_cf;
+    }
+    else // if var not matched
+    {
+      neg = negative_cofactor(np->neg_cf,var);
+      pos = negative_cofactor(np->pos_cf,var);
+      np = tables.create_and_add_to_unique_table(np->var,neg,pos);
+    }
+  }
   // once you add your code, remove this and return your own result
   return np; 
 }
@@ -122,7 +136,22 @@ bdd_ptr positive_cofactor(bdd_ptr np, char var)
   bdd_tables& tables = bdd_tables::getInstance();
   
   //... your code goes here
-  
+  bdd_ptr neg,pos;
+  // if not terminal: do something
+  if( np->is_terminal()==false )
+  {
+    // if var matched
+    if( np->var == var ){
+      // cout << "Found!" << endl << np->pos_cf << endl;
+      np = np->pos_cf;
+    }
+    else // if var not matched
+    {
+      neg = positive_cofactor(np->neg_cf,var);
+      pos = positive_cofactor(np->pos_cf,var);
+      np = tables.create_and_add_to_unique_table(np->var,neg,pos);
+    }
+  }
   // once you add your code, remove this and return your own result
   return np; 
 }
@@ -135,7 +164,11 @@ bdd_ptr boolean_difference(bdd_ptr np, char var)
   bdd_tables& tables = bdd_tables::getInstance();
   
   //... your code goes here
-  
+  bdd_ptr neg,pos;
+  operation op("xor");
+  neg = negative_cofactor(np,var);
+  pos = positive_cofactor(np,var);
+  np = apply(neg,pos,op);
   // once you add your code, remove this and return your own result
   return np; 
 }
