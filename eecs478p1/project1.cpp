@@ -181,7 +181,51 @@ bdd_ptr boolean_difference(bdd_ptr np, char var)
 bdd_ptr sort_by_influence(bdd_ptr np)
 {
   //... your code goes here
-  
+  bdd_ptr node;
+  char  var_array[100],ch_buff;
+  float prob_array[100],prob_buff;
+  int in=0;
+  for( char ch = 'A' ; ch <= 'Z' ; ch++ )
+  {
+    if(np->has_var(ch) == true)
+    {
+      node = boolean_difference(np,ch);
+      var_array[in] = ch;
+      prob_array[in] = node->probability;
+      in++;
+    }
+  }
+  for( char ch = 'a' ; ch <= 'z' ; ch++ )
+  {
+    if(np->has_var(ch) == true)
+    {
+      node = boolean_difference(np,ch);
+      var_array[in] = ch;
+      prob_array[in] = node->probability;
+      in++;
+    }
+  }
+
+  for( int i = 0 ; i < in ; ++i )
+  {
+    for( int j = i ; j < in ; ++j )
+    {
+      if( prob_array[j] > prob_array[i] )
+      {
+        ch_buff = var_array[i];
+        prob_buff = prob_array[i];
+        var_array[i] = var_array[j];
+        prob_array[i] = prob_array[j];
+        var_array[j] = ch_buff;
+        prob_array[j] = prob_buff;
+      }
+    }
+  }
+  for( int i = 0 ; i < in ; ++i )
+  {
+    cout <<var_array[i]<<','<<prob_array[i]<<endl;
+  }
+
   // this function does not alter the current node, so np must be
   // returned at the end
   return np; 
@@ -193,7 +237,11 @@ bool check_Probability_equivalence(bdd_ptr bdd1, bdd_ptr bdd2)
 {
   bool is_P_equivalence = false;
   //... your code goes here
-  //
+  if (bdd1->probability == bdd2->probability)
+  {
+    is_P_equivalence = true;
+  }
+  
   // this function does not alter the current node, so np must be
   // returned at the end
   return is_P_equivalence;
