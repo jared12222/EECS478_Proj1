@@ -39,13 +39,20 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
 
   // ... your code goes here
   // change the return value when you're finished
-
-
+  cout << "var " << bdd1->var << bdd2->var << endl;
+  if( bdd1->var >  bdd2->var )
+  {
+    bdd_ptr buff = bdd1;
+    bdd1 = bdd2;
+    bdd2 = buff;
+    cout << "Order reorganized";
+  }
 
   bdd_ptr node,neg_n,pos_n;
   string str_op = bdd1->var + op.get_operation() + bdd2->var;
-  
-  if( tables.find_in_computed_table(str_op,bdd1,bdd2)!= 0 )
+  char var;
+
+  if( tables.find_in_computed_table(op.get_operation(),bdd1,bdd2)!= 0 )
     return tables.find_in_computed_table(str_op,bdd1,bdd2);
   
   if( bdd1->is_terminal() && bdd2->is_terminal() ) // Could be computed
@@ -61,41 +68,35 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
     // cout << "bdd1 is terminal" << endl;
     neg_n = apply(bdd1,bdd2->neg_cf,op.get_operation());
     pos_n = apply(bdd1,bdd2->pos_cf,op.get_operation());
+    var = bdd2->var;
   }
   else if ( bdd2->is_terminal() == 1 )
   {
     // cout << "bdd2 is terminal" << endl;
     neg_n = apply(bdd1->neg_cf,bdd2,op.get_operation());
     pos_n = apply(bdd1->pos_cf,bdd2,op.get_operation());
+    var = bdd1->var;
   }
-  else
+  else  // Both bdd aren't terminal
   {
     // cout << "No terminal" << endl;
     if( bdd1->var != bdd2->var )
     {
       neg_n = apply(bdd1->neg_cf,bdd2,op.get_operation());
       pos_n = apply(bdd1->pos_cf,bdd2,op.get_operation());
-      node = tables.create_and_add_to_unique_table(bdd1->var,neg_n,pos_n);
+      var = bdd1->var;
+      node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
       return node;
     }
-    neg_n = apply(bdd1->neg_cf,bdd2->neg_cf,op.get_operation());
-    pos_n = apply(bdd1->pos_cf,bdd2->pos_cf,op.get_operation());
+    else{
+      neg_n = apply(bdd1->neg_cf,bdd2->neg_cf,op.get_operation());
+      pos_n = apply(bdd1->pos_cf,bdd2->pos_cf,op.get_operation());
+      var = bdd1->var;
+    }
   }
-    
   
-  // cout << "childs should be computed" << endl;
-  
-  // fill in childs into node
-  char var;
-  if(bdd1->is_terminal())
-    var = bdd2->var;
-  else if(bdd2->is_terminal())
-    var = bdd1->var;
   node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
-  // cout << "paran " << node << endl;
-  // cout << "neg_n " << neg_n << endl;
-  // cout << "pos_n " << pos_n << endl;
-  // tables.print_computed_table(); 
+
   return node;
 }
 
