@@ -39,13 +39,13 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
 
   // ... your code goes here
   // change the return value when you're finished
-  cout << "var " << bdd1->var << bdd2->var << endl;
+  // cout << "var " << bdd1->var << bdd2->var << endl;
   if( bdd1->var >  bdd2->var )
   {
+    // Reorganized variables order
     bdd_ptr buff = bdd1;
     bdd1 = bdd2;
     bdd2 = buff;
-    cout << "Order reorganized";
   }
 
   bdd_ptr node,neg_n,pos_n;
@@ -95,8 +95,9 @@ bdd_ptr apply(bdd_ptr bdd1, bdd_ptr bdd2, operation &op)
     }
   }
   
-  node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
-
+  node = tables.find_in_unique_table(var,neg_n,pos_n);
+  if( node == 0 )
+    node = tables.create_and_add_to_unique_table(var,neg_n,pos_n);
   return node;
 }
 
