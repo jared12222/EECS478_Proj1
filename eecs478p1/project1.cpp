@@ -182,8 +182,8 @@ bdd_ptr sort_by_influence(bdd_ptr np)
 {
   //... your code goes here
   bdd_ptr node;
-  char  var_array[100],ch_buff;
-  float prob_array[100],prob_buff;
+  char  var_array[20],ch_buff;
+  float prob_array[20],prob_buff;
   int in=0;
   for( char ch = 'A' ; ch <= 'Z' ; ch++ )
   {
