@@ -1,0 +1,23 @@
+# EECS 478 Project 1
+
+## Task Description
+
+In this project, I implemented an algorithm based on Boole-Shannon expansion theorem to automatically construct Binary Decision Diagram (BDD) by software program. In the ```apply``` function, by recursively exploring 2 input BDDs, we construct the output bdd with ```bdd1 <op> bdd2``` where ```<op>``` is OR, AND, or XOR. With ```negative_cofactor``` and ```positive_cofactor``` that they are the functions to compute cofactors with designated ```var```, it's easy to compute the result of boolean difference. With boolean difference, we can get a sense of how the input would affect the output in the boolean fucntion. In ```variable influence```, it would show how individual variables contribute to the function to be true. Finally, ```check_Probability_equivalence``` is a approximate way to check if two bdds are same in term of the probability to be true.
+
+## Discussion
+
+Can we reduce the size of BDDs by reordering the variables according to their influence value?
+
+Yes, for example, ```F = a&!d&f|e&f|d&!c&!e|b&f```
+By the order of ```{a,b,c,d,e,f}```, number of effective nodes is 13.
+
+By reordering according to their influence, which is
+
+f,0.75
+e,0.25
+c,0.1875
+d,0.1875
+b,0.125
+a,0.0625
+
+By the order of ```{f,e,c,d,b,a}```, number of effective nodes decreases to 11.
