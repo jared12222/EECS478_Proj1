@@ -185,6 +185,8 @@ bdd_ptr sort_by_influence(bdd_ptr np)
   char  var_array[20],ch_buff;
   float prob_array[20],prob_buff;
   int in=0;
+
+  // Finding variables and calculate corresponding influence
   for( char ch = 'A' ; ch <= 'Z' ; ch++ )
   {
     if(np->has_var(ch) == true)
@@ -206,6 +208,7 @@ bdd_ptr sort_by_influence(bdd_ptr np)
     }
   }
 
+  // Sorting
   for( int i = 0 ; i < in ; ++i )
   {
     for( int j = i ; j < in ; ++j )
